@@ -1,104 +1,246 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gemini 聊天助手</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Segoe UI", sans-serif; background: #f5f7fa; color: #333; }
-    .container { display: flex; height: 100vh; }
-    .sidebar {
-      width: 240px; background: #ffffff; border-right: 1px solid #ddd;
-      padding: 20px; display: flex; flex-direction: column;
-    }
-    .sidebar h2 {
-      font-size: 18px; margin-bottom: 20px; color: #1a73e8;
-    }
-    .chat-area {
-      flex: 1; display: flex; flex-direction: column;
-      justify-content: space-between;
-    }
-    .chat-box {
-      padding: 20px; overflow-y: auto; flex-grow: 1;
-    }
-    .message {
-      margin-bottom: 16px; line-height: 1.5;
-    }
-    .user { text-align: right; color: #1a73e8; }
-    .ai { text-align: left; color: #202124; background: #e8f0fe; padding: 10px 15px; 
-border-radius: 8px; display: inline-block; max-width: 80%; }
-    .input-area {
-      padding: 15px 20px; border-top: 1px solid #ddd; background: #fff;
-      display: flex; gap: 10px;
-    }
-    input[type="text"] {
-      flex-grow: 1; padding: 10px 15px; font-size: 16px;
-      border: 1px solid #ccc; border-radius: 20px;
-    }
-    button {
-      background: #1a73e8; color: #fff; border: none;
-      padding: 10px 20px; border-radius: 20px;
-      cursor: pointer; font-weight: bold;
-    }
-    button:hover { background: #155ec6; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI 助手</title>
+    <style>
+        :root {
+            --background-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --header-border: #e7eaf3;
+            --text-primary: #1d2129;
+            --text-secondary: #65676b;
+            --ai-bubble-bg: #f0f2f5;
+            --user-bubble-bg: #0084ff;
+            --user-bubble-text: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #chat-container {
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            max-height: 95vh;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #header {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--header-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        #header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        #persona-selector {
+            font-size: 0.9rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccd0d5;
+            background-color: #f5f6f7;
+            cursor: pointer;
+        }
+        
+        #chat-box {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .message { display: flex; max-width: 85%; }
+        .message-bubble { padding: 10px 16px; border-radius: 18px; line-height: 1.5; word-wrap: break-word; white-space: 
+pre-wrap; }
+        .user-message { align-self: flex-end; }
+        .user-message .message-bubble { background-color: var(--user-bubble-bg); color: var(--user-bubble-text); 
+border-bottom-right-radius: 4px; }
+        .ai-message { align-self: flex-start; }
+        .ai-message .message-bubble { background-color: var(--ai-bubble-bg); color: var(--text-primary); 
+border-bottom-left-radius: 4px; }
+        .loading .message-bubble { color: var(--text-secondary); font-style: italic; animation: blink 1.5s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        #input-area {
+            padding: 16px 24px;
+            border-top: 1px solid var(--header-border);
+            background-color: var(--container-bg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        #message-input {
+            flex-grow: 1;
+            border: 1px solid #ccd0d5;
+            background-color: #f5f6f7;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            outline: none;
+            resize: none;
+        }
+        #message-input:focus { border-color: var(--user-bubble-bg); }
+
+        #send-button {
+            background-color: var(--user-bubble-bg);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s, background-color 0.2s;
+            flex-shrink: 0;
+        }
+        #send-button:hover { transform: scale(1.1); background-color: #0072e8; }
+        #send-button svg { fill: white; width: 20px; height: 20px; }
+
+        @media (max-width: 600px) {
+            #chat-container { border-radius: 0; height: 100vh; max-height: 100vh; }
+            #header { padding: 10px 16px; }
+            #header h1 { font-size: 1rem; }
+            #chat-box { padding: 16px; }
+            #input-area { padding: 12px 16px; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <h2>🧠 Gemini 聊天</h2>
-      <div style="margin-top:auto; font-size: 12px; color: #888;">@ 你的品牌名</div>
+    <div id="chat-container">
+        <div id="header">
+            <h1>Gemini AI 助手</h1>
+            <select id="persona-selector">
+                <option>正在加载角色...</option>
+            </select>
+        </div>
+        <div id="chat-box">
+             <div class="message ai-message"><div 
+class="message-bubble">你好！请在右上角选择我的角色，然后开始对话吧。</div></div>
+        </div>
+        <div id="input-area">
+            <input type="text" id="message-input" placeholder="请输入消息...">
+            <button id="send-button" title="发送">
+                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
     </div>
-    <div class="chat-area">
-      <div class="chat-box" id="chat-box">
-        <div class="message ai">您好，我是 Gemini，有什么我可以帮您的吗？</div>
-      </div>
-      <div class="input-area">
-        <input type="text" id="message-input" placeholder="请输入消息..." />
-        <button id="send-button">发送</button>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    const input = document.getElementById("message-input");
-    const button = document.getElementById("send-button");
-    const chatBox = document.getElementById("chat-box");
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const personaSelector = document.getElementById('persona-selector');
 
-    const appendMessage = (text, type) => {
-      const div = document.createElement("div");
-      div.className = "message " + type;
-      div.innerHTML = (type === "ai") ? `<div class="ai">${text}</div>` : 
-`<div>${text}</div>`;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    };
+        // --- 新增：页面加载时，自动从后端获取角色列表 ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/get-personas');
+                const personas = await response.json();
+                
+                // 清空下拉菜单
+                personaSelector.innerHTML = '';
 
-    const sendMessage = async () => {
-      const text = input.value.trim();
-      if (!text) return;
-      appendMessage(text, "user");
-      input.value = "";
-
-      try {
-        const res = await fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text })
+                // 动态创建下拉菜单选项
+                for (const key in personas) {
+                    const option = document.createElement('option');
+                    option.value = key; // value是程序用的键
+                    option.textContent = personas[key]; // textContent是给用户看的名字
+                    personaSelector.appendChild(option);
+                }
+            } catch (error) {
+                console.error('加载AI角色列表失败:', error);
+                personaSelector.innerHTML = '<option>加载失败</option>';
+            }
         });
-        const data = await res.json();
-        appendMessage(data.reply || data.error || "⚠️ 没有返回结果", "ai");
-      } catch (e) {
-        appendMessage("❌ 网络错误：" + e.message, "ai");
-      }
-    };
 
-    button.onclick = sendMessage;
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
-  </script>
+        async function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText === '') return;
+
+            const selectedPersonaKey = personaSelector.value;
+            messageInput.value = '';
+
+            addMessage(messageText, 'user-message');
+            const loadingElement = addMessage('...', 'ai-message loading');
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: messageText,
+                        persona: selectedPersonaKey 
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
+                
+                const data = await response.json();
+                const reply = data.reply || data.error || '无法获取回复。';
+                
+                updateMessage(loadingElement, reply);
+
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                updateMessage(loadingElement, '抱歉，好像出错了。请稍后再试。');
+            }
+        }
+
+        // 辅助函数 (无改动)
+        function addMessage(text, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${className}`;
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.innerText = text;
+            messageDiv.appendChild(messageDiv);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return messageDiv;
+        }
+
+        function updateMessage(element, newText) {
+            element.classList.remove('loading');
+            const bubble = element.querySelector('.message-bubble');
+            if(bubble) bubble.innerText = newText;
+        }
+
+        // 事件监听 (无改动)
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>
-
