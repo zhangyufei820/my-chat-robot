@@ -1,231 +1,102 @@
+<!-- ---------- index.html  科技 / 时尚风 ---------- -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini AI 工作站</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;700&display=swap');
-        :root {
-            --bg-deep-space: #0d0f1a; --bg-panel: #1a1c2e; --accent-purple: #9d8eee; --accent-blue: #00BFFF;
-            --text-primary: #F0F0F5; --text-secondary: #a9a9d0; --border-color: #3a3a6e;
-        }
-        body { margin: 0; font-family: 'Exo 2', 'Noto Sans SC', sans-serif; background-color: var(--bg-deep-space); color: var(--text-primary); display: flex; 
-flex-direction: column; height: 100vh; overflow: hidden; }
-        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: var(--bg-deep-space); }
-        .star { position: absolute; background-color: white; border-radius: 50%; animation: twinkle 5s infinite ease-in-out; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
-        
-        #app-container { display: flex; flex-direction: column; width: 100%; height: 100%; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        #personas-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            padding: 20px 0;
-            flex-shrink: 0;
-        }
-        .persona-card {
-            background: linear-gradient(145deg, #2a2c4e, #1a1c2e);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .persona-card:hover, .persona-card.active {
-            transform: translateY(-5px);
-            border-color: var(--accent-purple);
-            box-shadow: 0 8px 30px rgba(157, 142, 238, 0.3);
-        }
-        .persona-card.active { background: linear-gradient(145deg, var(--accent-purple), #6a5acd); }
-        .persona-card h3 { margin-top: 0; font-size: 1.1em; color: var(--text-primary); }
-        
-        #chat-wrapper { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-panel); border-radius: 12px; overflow: hidden; border: 1px solid 
-var(--border-color); }
-        #chat-box { flex-grow: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
-        .message { display: flex; max-width: 85%; animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .message-bubble { padding: 10px 16px; border-radius: 18px; line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .user-message { align-self: flex-end; }
-        .user-message .message-bubble { background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-bottom-right-radius: 4px; }
-        .ai-message { align-self: flex-start; }
-        .ai-message .message-bubble { background-color: #2a2d42; color: var(--text-secondary); border-bottom-left-radius: 4px; }
-        .loading .message-bubble { animation: blink 1.5s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-
-        #input-area { padding: 16px 24px; border-top: 1px solid var(--border-color); background-color: rgba(13, 15, 26, 0.8); backdrop-filter: blur(10px); display: flex; 
-align-items: center; gap: 12px; flex-shrink: 0; }
-        #message-input { flex-grow: 1; border: 1px solid var(--border-color); background-color: var(--bg-deep-space); border-radius: 20px; padding: 10px 18px; font-size: 
-1rem; color: var(--text-primary); outline: none; transition: all 0.3s; }
-        #message-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 10px rgba(157, 142, 238, 0.3); }
-        #send-button { background-color: var(--accent-purple); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; justify-content: 
-center; align-items: center; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 0 12px rgba(157, 142, 238, 0.5); }
-        #send-button:hover { transform: scale(1.1); box-shadow: 0 0 18px rgba(157, 142, 238, 0.8); }
-        #send-button svg { fill: white; width: 20px; height: 20px; }
-
-        @media (max-width: 768px) {
-            #app-container { padding: 10px; }
-            #personas-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-            .persona-card { padding: 15px; }
-            .persona-card h3 { font-size: 1em; }
-            #chat-box, #input-area { padding: 15px; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gemini AI 聊天工作站</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+:root{
+  --bg:#0d0f1a;--panel:#1e2136;--accent:#6a7dff;--accent2:#9a8cff;
+  --text:#f4f6ff;--sub:#a7acd9;--border:#2e3150;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Poppins,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
+#container{max-width:1200px;margin:auto;display:flex;flex-direction:column;height:100%;padding:20px;gap:20px}
+#personas{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.persona{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:.3s;
+box-shadow:0 4px 10px rgba(0,0,0,.25);}
+.persona.active,.persona:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 25px rgba(106,125,255,.4)}
+.persona h3{font-size:18px;font-weight:600;line-height:1.3}
+#chat{flex:1;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+#log{flex:1;padding:24px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;background:var(--panel)}
+.msg{max-width:85%;display:flex;animation:fade .4s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.user .bubble{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-bottom-right-radius:4px}
+.ai   .bubble{background:#272a45;color:var(--sub);border-bottom-left-radius:4px}
+.bubble{padding:10px 16px;border-radius:20px;line-height:1.5;white-space:pre-wrap;word-break:break-word;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+#inputBar{padding:16px;background:rgba(13,15,26,.85);backdrop-filter:blur(8px);display:flex;gap:12px;border-top:1px solid var(--border)}
+#msgInput{flex:1;padding:12px 18px;border-radius:24px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:15px}
+#msgInput:focus{outline:none;border-color:var(--accent)}
+#send{width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:var(--accent);display:flex;align-items:center;justify-content:center;
+box-shadow:0 0 12px rgba(106,125,255,.6);transition:.3s}
+#send:hover{transform:scale(1.08)}
+#send svg{fill:#fff;width:22px;height:22px}
+</style>
 </head>
 <body>
-    <div class="stars"></div>
-    <div id="app-container">
-        <div id="personas-container">
-            </div>
-        <div id="chat-wrapper">
-            <div id="chat-box">
-                <div class="message ai-message"><div class="message-bubble">你好！请从上方选择一个AI专家角色，然后开始对话。</div></div>
-            </div>
-            <div id="input-area">
-                <input type="text" id="message-input" placeholder="请先选择一个角色...">
-                <button id="send-button" title="发送">
-                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-                </button>
-            </div>
-        </div>
-        <input type="hidden" id="selected-persona" value="">
+<div id="container">
+  <div id="personas"></div>
+  <div id="chat">
+    <div id="log">
+      <div class="msg ai"><div class="bubble">👋 请选择上方任一 AI 角色，然后开始对话！</div></div>
     </div>
+    <div id="inputBar">
+      <input id="msgInput" placeholder="请输入消息…" />
+      <button id="send" title="发送">
+        <svg viewBox="0 0 24 24"><path d="M2 21 23 12 2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+  <input type="hidden" id="curPersona">
+</div>
 
-    <script>
-        // --- DOM Elements ---
-        const chatBox = document.getElementById('chat-box');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const personasContainer = document.getElementById('personas-container');
-        const selectedPersonaInput = document.getElementById('selected-persona');
+<script>
+const personasDiv=document.getElementById('personas');
+const log=document.getElementById('log');
+const msgInput=document.getElementById('msgInput');
+const sendBtn=document.getElementById('send');
+const curPersona=document.getElementById('curPersona');
 
-        // --- Event Listeners ---
-        window.addEventListener('DOMContentLoaded', loadPersonas);
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        });
+window.addEventListener('DOMContentLoaded',loadPersonas);
+sendBtn.addEventListener('click',sendMsg);
+msgInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
 
-        // --- Core Functions ---
-        async function loadPersonas() {
-            try {
-                const response = await fetch('/get-personas');
-                if (!response.ok) throw new Error('Network response was not ok');
-                const personas = await response.json();
-                
-                personasContainer.innerHTML = ''; // Clear container
-
-                for (const key in personas) {
-                    const card = document.createElement('div');
-                    card.className = 'persona-card';
-                    card.dataset.personaKey = key;
-                    
-                    const title = document.createElement('h3');
-                    title.textContent = personas[key];
-                    card.appendChild(title);
-                    
-                    card.addEventListener('click', () => selectPersona(key, card));
-                    personasContainer.appendChild(card);
-                }
-                // Auto-select the first persona
-                if (personasContainer.firstChild) {
-                    personasContainer.firstChild.click();
-                }
-
-            } catch (error) {
-                console.error('加载AI角色列表失败:', error);
-                personasContainer.innerHTML = '<p style="color:red;">加载角色失败</p>';
-            }
-        }
-
-        function selectPersona(personaKey, selectedCard) {
-            selectedPersonaInput.value = personaKey;
-            messageInput.placeholder = `以“${selectedCard.textContent}”的身份对话...`;
-            
-            // Update active state for visual feedback
-            document.querySelectorAll('.persona-card').forEach(card => card.classList.remove('active'));
-            selectedCard.classList.add('active');
-        }
-
-        async function sendMessage() {
-            const messageText = messageInput.value.trim();
-            const selectedPersonaKey = selectedPersonaInput.value;
-
-            if (messageText === '') return;
-            if (selectedPersonaKey === '') {
-                alert('请先选择一个AI角色！');
-                return;
-            }
-
-            addMessage(messageText, 'user-message');
-            const loadingElement = addMessage('...', 'ai-message loading');
-            messageInput.value = '';
-
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        message: messageText,
-                        persona: selectedPersonaKey 
-                    })
-                });
-
-                if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
-                
-                const data = await response.json();
-                const reply = data.reply || data.error || '无法获取回复。';
-                
-                updateMessage(loadingElement, reply);
-
-            } catch (error) {
-                console.error('发送消息失败:', error);
-                updateMessage(loadingElement, '抱歉，好像出错了。请稍后再试。');
-            }
-        }
-
-        // --- Helper Functions ---
-        function addMessage(text, className) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${className}`;
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = 'message-bubble';
-            bubbleDiv.innerText = text;
-            messageDiv.appendChild(bubbleDiv);
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return messageDiv;
-        }
-
-        function updateMessage(element, newText) {
-            element.classList.remove('loading');
-            const bubble = element.querySelector('.message-bubble');
-            if(bubble) bubble.innerText = newText;
-        }
-
-        function createStars(count) {
-            const starsContainer = document.querySelector('.stars');
-            if (!starsContainer) return;
-            for (let i = 0; i < count; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                const size = Math.random() * 2 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.animationDelay = `${Math.random() * 5}s`;
-                star.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                starsContainer.appendChild(star);
-            }
-        }
-        createStars(150);
-    </script>
+async function loadPersonas(){
+  try{
+    const res=await fetch('/get-personas'); if(!res.ok)throw new Error();
+    const list=await res.json(); personasDiv.innerHTML='';
+    for(const k in list){ const card=document.createElement('div');
+      card.className='persona'; card.dataset.key=k;
+      card.innerHTML=`<h3>${list[k]}</h3>`;
+      card.onclick=()=>selectPersona(card,k);
+      personasDiv.appendChild(card);} 
+  }catch{personasDiv.innerHTML='<p style="color:red;">加载失败</p>';}
+}
+function selectPersona(el,key){
+  document.querySelectorAll('.persona').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); curPersona.value=key;
+  msgInput.placeholder=`以「${el.textContent}」的身份对话…`;
+}
+function addMsg(text,type){
+  const div=document.createElement('div'); div.className=`msg ${type}`;
+  div.innerHTML=`<div class="bubble">${text}</div>`; log.appendChild(div); log.scrollTop=log.scrollHeight;
+  return div;
+}
+async function sendMsg(){
+  const txt=msgInput.value.trim(); if(!txt)return;
+  if(!curPersona.value){alert('请先选择角色');return;}
+  addMsg(txt,'user'); msgInput.value='';
+  const loading=addMsg('...', 'ai');
+  try{
+    const res=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:txt,persona:curPersona.value})});
+    const data=await res.json(); loading.querySelector('.bubble').textContent=data.reply||data.error;
+  }catch{loading.querySelector('.bubble').textContent='❌ 网络错误';}
+}
+</script>
 </body>
 </html>
+<!-- ---------- index.html 结束 ---------- -->
+
