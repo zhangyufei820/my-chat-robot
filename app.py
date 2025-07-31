@@ -474,7 +474,7 @@ try:
         raise ValueError("环境变量 'GEMINI_API_KEY' 未设置或为空。")
     genai.configure(api_key=api_key)
     # 我们暂时使用Flash模型以获得最佳速度，您可以随时切换到 'gemini-1.5-pro'
-    model = genai.GenerativeModel('gemini-1.5-flash') 
+    model = genai.GenerativeModel('gemini-2.5-pro') 
     print("Gemini API 配置成功！")
 except Exception as e:
     print(f"初始化Gemini模型时发生错误: {e}")
@@ -506,7 +506,7 @@ def chat():
         # 使用更安全的方式初始化模型，注入系统指令
         # 这样用户的对话历史里就不会包含我们的核心提示词了
         instructed_model = genai.GenerativeModel(
-            'gemini-1.5-flash',
+            'gemini-2.5-pro',
             system_instruction=system_prompt
         )
         
