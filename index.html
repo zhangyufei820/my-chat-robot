@@ -1,48 +1,146 @@
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&display=swap');
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gemini AI 工作站</title>
 
-  :root{
-    --deep:#0e101a;--panel:#181b2e;--border:#3a3e6e;
-    --c1:#9d8eee;--c2:#00bfff;--txt:#f2f3fa;--txt2:#bfbfe7;
-  }
-  *{box-sizing:border-box;padding:0;margin:0}
-  body{font-family:'Exo 2','Noto Sans SC',sans-serif;background:var(--deep);color:var(--txt);height:100vh;display:flex}
-  /*  ======  两栏布局  ======  */
-  #sidebar{width:300px;padding:32px 24px;display:flex;flex-direction:column;gap:24px;border-right:1px solid var(--border);overflow-y:auto}
-  #chat-wrapper{flex:1;display:flex;flex-direction:column;background:var(--panel)}
-  /*  角色按钮  */
-  .persona-card{
-    background:linear-gradient(145deg,#222546,#16182a);
-    border:1px solid var(--border);border-radius:14px;padding:22px 16px;
-    text-align:center;cursor:pointer;transition:.25s;user-select:none;
-    font-size:1.05rem;font-weight:600;line-height:1.4;color:var(--txt2);
-    box-shadow:0 3px 10px rgba(0,0,0,.4)
-  }
-  .persona-card:hover,
-  .persona-card.active{
-    transform:translateY(-6px);
-    border-color:var(--c1);color:#fff;
-    background:linear-gradient(135deg,var(--c1) 0%,var(--c2) 100%);
-    box-shadow:0 6px 25px rgba(0,191,255,.45)
-  }
-  /* 聊天区 */
-  #chat-box{flex:1;padding:28px;overflow-y:auto;display:flex;flex-direction:column;gap:20px}
-  .message{max-width:80%;display:flex;animation:fade .5s}
-  .user-message{align-self:flex-end}
-  .ai-message{align-self:flex-start}
-  .message-bubble{
-    padding:14px 20px;border-radius:20px;background:#007bff;color:#fff;
-    line-height:1.65;white-space:pre-wrap;word-break:break-word;
-  }
-  .ai-message .message-bubble{background:#26293f;color:var(--txt2)}
-  /* 输入区 */
-  #input-area{display:flex;padding:18px 24px;border-top:1px solid var(--border);gap:14px;background:rgba(14,16,26,.9);backdrop-filter:blur(8px)}
-  #message-input{flex:1;background:var(--deep);border:1px solid var(--border);border-radius:22px;padding:12px 20px;color:var(--txt);font-size:1rem}
-  #message-input:focus{outline:none;border-color:var(--c1);box-shadow:0 0 8px rgba(157,142,238,.7)}
-  
-#send-button{width:48px;height:48px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--c1),var(--c2));display:flex;justify-content:center;align-items:center;cursor:pointer;transition:.2s}
-  #send-button svg{fill:#fff;width:22px;height:22px}
-  #send-button:hover{transform:scale(1.1);box-shadow:0 0 15px rgba(0,191,255,.6)}
-  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+<!-- 字体 & 配色 -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&display=swap');
+:root{
+  --deep:#0d0f1a;--panel:#181b2e;--border:#3a3e6e;
+  --c1:#9d8eee;--c2:#00bfff;--txt:#f0f0f5;--txt2:#bfbfe7;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:'Exo 2','Noto Sans SC',sans-serif;background:var(--deep);color:var(--txt);height:100vh;display:flex}
+#sidebar{width:300px;padding:32px 24px;display:flex;flex-direction:column;gap:24px;border-right:1px solid var(--border);overflow-y:auto}
+#chat-wrapper{flex:1;display:flex;flex-direction:column;background:var(--panel)}
+/* 角色卡 */
+.persona-card{background:linear-gradient(145deg,#222546,#16182a);border:1px solid var(--border);border-radius:14px;padding:22px 
+16px;text-align:center;cursor:pointer;transition:.25s;user-select:none;font-size:1.05rem;font-weight:600;line-height:1.4;color:var(--txt2);box-shadow:0 3px 10px 
+rgba(0,0,0,.4)}
+.persona-card:hover,.persona-card.active{transform:translateY(-6px);color:#fff;background:linear-gradient(135deg,var(--c1) 0%,var(--c2) 100%);box-shadow:0 6px 15px 
+rgba(0,191,255,.45)}
+/* 聊天区 */
+#chat-box{flex:1;padding:28px;overflow-y:auto;display:flex;flex-direction:column;gap:20px}
+.message{display:flex;max-width:85%;animation:fadeIn .4s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.message-bubble{padding:14px 22px;border-radius:20px;background:#007bff;color:#fff;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.ai-message .message-bubble{background:#2a2d42;color:var(--txt2)}
+.loading .message-bubble{animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.45}}
+/* 输入区 */
+#input-area{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:12px;background:rgba(14,16,26,.9);backdrop-filter:blur(12px)}
+#message-input{flex:1;background:var(--deep);border:1px solid var(--border);border-radius:22px;padding:10px 18px;font-size:1rem;color:var(--txt);outline:none}
+#message-input:focus{border-color:var(--c1);box-shadow:0 0 8px rgba(157,142,238,.5)}
+#send-button{width:46px;height:46px;border:none;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c2));cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;box-shadow:0 
+0 12px rgba(157,142,238,.5)}
+#send-button:hover{transform:scale(1.1);box-shadow:0 0 18px rgba(0,191,255,.75)}
+#send-button svg{fill:#fff;width:22px;height:22px}
+@media(max-width:768px){#sidebar{display:none}}
 </style>
+</head>
+
+<body>
+  <!-- 侧边角色选择 -->
+  <div id="sidebar"></div>
+
+  <!-- 聊天主视图 -->
+  <div id="chat-wrapper">
+    <div id="chat-box">
+      <div class="message ai-message">
+        <div class="message-bubble">你好！请先从左侧选择一个角色，然后开始聊天。</div>
+      </div>
+    </div>
+    <div id="input-area">
+      <input id="message-input" type="text" placeholder="请先选择角色..." />
+      <button id="send-button" title="发送">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+<!-- ==================== 前端脚本 ==================== -->
+<script>
+const API_ROOT = location.origin;          // 动态根路径
+const chatBox = document.getElementById('chat-box');
+const input = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-button');
+const sidebar = document.getElementById('sidebar');
+
+let currentPersona = '';
+
+/* ---------- 角色加载 ---------- */
+async function loadPersonas(){
+  try{
+    const res = await fetch(`${API_ROOT}/get-personas`);
+    const personas = await res.json();
+    sidebar.innerHTML='';
+    Object.entries(personas).forEach(([key,name])=>{
+      const card = document.createElement('div');
+      card.className='persona-card';
+      card.textContent=name;
+      card.onclick=()=>selectPersona(key,card);
+      sidebar.appendChild(card);
+    });
+  }catch(err){
+    sidebar.innerHTML='<p style="color:red">角色加载失败</p>';
+  }
+}
+
+/* ---------- 选择角色 ---------- */
+function selectPersona(key, card){
+  currentPersona = key;
+  input.placeholder = `以【${card.textContent}】身份聊天…`;
+  document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active');
+}
+
+/* ---------- 发送消息 ---------- */
+sendBtn.onclick = sendMessage;
+input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+
+function addMessage(text, className){
+  const msg = document.createElement('div');
+  msg.className=`message ${className}`;
+  const bubble = document.createElement('div');
+  bubble.className='message-bubble';
+  bubble.textContent=text;
+  msg.appendChild(bubble);          // ★ 正确：添加 bubble
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return msg;
+}
+
+async function sendMessage(){
+  const text = input.value.trim();
+  if(!text||!currentPersona){return}
+  addMessage(text,'user-message');
+  const loading = addMessage('...', 'ai-message loading');
+  input.value='';
+
+  try{
+    const res = await fetch(`${API_ROOT}/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,persona:currentPersona})
+    });
+    const data = await res.json();
+    updateMessage(loading, data.reply||data.error||'出错了');
+  }catch(err){
+    updateMessage(loading,'网络错误，请稍后再试');
+  }
+}
+
+function updateMessage(el,newText){
+  el.classList.remove('loading');
+  el.querySelector('.message-bubble').textContent=newText;
+}
+
+/* ---------- 启动 ---------- */
+loadPersonas();
+</script>
+</body>
+</html>
 
