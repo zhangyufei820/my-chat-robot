@@ -1,5 +1,7 @@
 import os
 import re
+import google.generativeai as genai
+
 from flask import Flask, request, jsonify, render_template
 
 # 初始化Flask应用

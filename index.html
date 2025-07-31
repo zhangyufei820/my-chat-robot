@@ -197,7 +197,7 @@ center; align-items: center; transition: all 0.2s; flex-shrink: 0; box-shadow: 0
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
             bubbleDiv.innerText = text;
-            messageDiv.appendChild(messageDiv);
+            messageDiv.appendChild(bubbleDiv);
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
             return messageDiv;
