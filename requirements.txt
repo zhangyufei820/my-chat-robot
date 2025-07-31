@@ -1,4 +1,5 @@
 flask
 google-generative-ai
 gunicorn
+google-generativeai==0.3.2
 
