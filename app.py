@@ -1,6 +1,6 @@
 # ---------- app.py  最终修正版 ----------
 import os, json, re
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, send_from_directory
 import google.generativeai as genai
 
 # ========== 环境变量 ==========
