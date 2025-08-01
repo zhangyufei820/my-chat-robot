@@ -19,11 +19,8 @@
   --user-bubble: #005c8a;
   --ai-bubble: #2c2c2e;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html { font-size: 16px; }
-
 body {
   font-family: 'Noto Sans SC', sans-serif;
   background: var(--bg-deep);
@@ -34,7 +31,6 @@ body {
   overflow: hidden;
   transition: transform 0.3s ease-in-out;
 }
-
 #sidebar {
   width: 300px;
   background: var(--bg-deep);
@@ -47,7 +43,6 @@ body {
   transition: transform 0.3s ease-in-out;
   flex-shrink: 0;
 }
-
 .persona-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -83,16 +78,14 @@ body {
   flex-shrink: 0;
 }
 .persona-card:hover .icon, .persona-card.active .icon { fill: var(--accent-primary); }
-
-
 #chat-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   background: var(--bg-panel);
   height: 100vh;
+  min-width: 0;
 }
-
 #chat-header {
   display: flex;
   align-items: center;
@@ -104,7 +97,7 @@ body {
   flex-shrink: 0;
 }
 #menu-button {
-  display: none; /* Hidden on desktop */
+  display: none;
   background: none;
   border: none;
   cursor: pointer;
@@ -115,8 +108,10 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   margin-left: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 #chat-box {
   flex: 1;
   padding: 2rem;
@@ -133,7 +128,6 @@ body {
   gap: 0.75rem;
 }
 @keyframes message-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
 .avatar {
   width: 40px; height: 40px; border-radius: 50%;
   background: var(--bg-deep);
@@ -141,7 +135,6 @@ body {
   flex-shrink: 0; border: 1px solid var(--border-color);
 }
 .avatar svg { width: 22px; height: 22px; fill: var(--text-secondary); }
-
 .message-bubble {
   padding: 0.8rem 1.2rem;
   border-radius: 18px;
@@ -155,7 +148,7 @@ body {
 .user-message { align-self: flex-end; flex-direction: row-reverse; }
 .user-message .avatar svg { fill: var(--accent-primary); }
 .user-message .message-bubble { background: var(--user-bubble); color: #fff; border-bottom-right-radius: 5px; }
-
+.loading .message-bubble { padding: 1.1rem 1.2rem; }
 .loading .dot-flashing { position: relative; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: 
 var(--text-secondary); animation: dot-flashing 1s infinite linear alternate; animation-delay: .5s; }
 .loading .dot-flashing::before, .loading .dot-flashing::after { content: ''; display: inline-block; position: absolute; top: 0; }
@@ -164,7 +157,6 @@ color: var(--text-secondary); animation: dot-flashing 1s infinite alternate; ani
 .loading .dot-flashing::after { left: 15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: 
 var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-delay: 1s; }
 @keyframes dot-flashing { 0% { background-color: var(--text-secondary); } 50%, 100% { background-color: rgba(176, 176, 176, 0.3); } }
-
 #input-area {
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-color);
@@ -193,7 +185,6 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
 }
 #send-button:hover { transform: scale(1.1); box-shadow: 0 0 12px var(--accent-glow); }
 #send-button svg { fill: #fff; width: 24px; height: 24px; }
-
 #overlay {
     display: none;
     position: fixed;
@@ -202,8 +193,6 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 99;
 }
-
-/* 移动端适配 */
 @media (max-width: 768px) {
   #sidebar {
     position: fixed;
@@ -246,141 +235,146 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
   </div>
 
 <script>
-console.log("--- SCRIPT STARTED ---");
-const API_ROOT = location.origin;
-const chatBox = document.getElementById('chat-box');
-const input = document.getElementById('message-input');
-const sendBtn = document.getElementById('send-button');
-const sidebar = document.getElementById('sidebar');
-const menuButton = document.getElementById('menu-button');
-const overlay = document.getElementById('overlay');
-const currentPersonaName = document.getElementById('current-persona-name');
+    const API_ROOT = location.origin;
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-button');
+    const sidebar = document.getElementById('sidebar');
+    const menuButton = document.getElementById('menu-button');
+    const overlay = document.getElementById('overlay');
+    const currentPersonaName = document.getElementById('current-persona-name');
 
-let currentPersona = '';
-let chatHistory = []; // 1. 全局变量，用于存储上下文
+    let currentPersona = '';
+    let chatHistory = [];
 
-const ICONS = { /* SVG图标内容保持不变 */ };
-
-// --- 移动端菜单逻辑 ---
-menuButton.addEventListener('click', () => document.body.classList.add('sidebar-open'));
-overlay.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
-
-async function loadPersonas() { /* 函数内容保持不变 */ }
-
-function selectPersona(key, card, name) {
-  currentPersona = key;
-  input.placeholder = `与 ${name} 对话...`;
-  currentPersonaName.textContent = name;
-  document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('active'));
-  card.classList.add('active');
-  
-  chatBox.innerHTML = '';
-  chatHistory = []; // 2. 切换角色时，清空历史记录
-  
-  addMessage(`你好！我是${name}，现在可以开始聊天了。`, 'ai');
-  
-  // 在移动端，选择后自动关闭侧边栏
-  document.body.classList.remove('sidebar-open');
-}
-
-function addMessage(text, type) {
-  const msg = document.createElement('div');
-  msg.className = `message ${type}-message`;
-  const avatar = document.createElement('div');
-  avatar.className = 'avatar';
-  avatar.innerHTML = ICONS[type === 'user' ? 'user' : 'ai'] || '';
-  const bubble = document.createElement('div');
-  bubble.className = 'message-bubble';
-  if (type === 'ai' && text === '...') {
-    msg.classList.add('loading');
-    bubble.innerHTML = '<div class="dot-flashing"></div>';
-  } else {
-    bubble.textContent = text;
-  }
-  msg.appendChild(avatar);
-  msg.appendChild(bubble);
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  
-  // 3. 将新消息添加到历史记录
-  const role = (type === 'user') ? 'user' : 'model';
-  chatHistory.push({ role: role, parts: [{ text: text }] });
-  
-  return msg;
-}
-
-function updateMessage(el, newText) {
-  el.classList.remove('loading');
-  const bubble = el.querySelector('.message-bubble');
-  if (bubble) {
-    bubble.innerHTML = '';
-    bubble.textContent = newText;
-  }
-  
-  // 4. 更新历史记录中的最后一条AI消息
-  const lastMessage = chatHistory[chatHistory.length - 1];
-  if (lastMessage && lastMessage.role === 'model') {
-    lastMessage.parts[0].text = newText;
-  }
-}
-
-async function sendMessage() {
-  const text = input.value.trim();
-  if (!text || !currentPersona) {
-    input.placeholder = !currentPersona ? "请先选择一个角色!" : "消息不能为空!";
-    return;
-  }
-  
-  addMessage(text, 'user');
-  const loading = addMessage('...', 'ai');
-  input.value = '';
-
-  try {
-    // 5. 发送包含历史记录的请求
-    const res = await fetch(`${API_ROOT}/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: text,
-        persona: currentPersona,
-        history: chatHistory.slice(0, -2) // 发送除最后两条（用户新消息和AI加载中）之外的历史
-      })
-    });
-    const data = await res.json();
-    if (res.ok) {
-        updateMessage(loading, data.reply);
-    } else {
-        updateMessage(loading, data.error || '发生未知错误');
-    }
-  } catch (err) {
-    updateMessage(loading, '网络连接失败，请稍后再试');
-  }
-}
-
-sendBtn.onclick = sendMessage;
-input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-
-// 启动
-loadPersonas();
-
-// 复制一份ICONS内容，因为上面折叠了
-const ICONS_data = {
-  persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 
+    const ICONS = {
+        persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 
 1.05V6h-2.5V4.65c0-.9-.75-1.65-1.65-1.65-.37 0-.72.12-1.01.32l-.5.33c-.45.3-.98.5-1.53.5-1.32 0-2.39-1.07-2.39-2.39S4.68.11 6 .11c.37 0 
 .74.08 1.08.23l.33.15c.98.44 2.1.44 3.08 0l.33-.15c.42-.19.89-.28 1.37-.28.32 0 .63.05.93.14Z M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 
 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39-.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0 
-1.41l-.17.17c-.39-.39-1.02.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
-  ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 1.65 
-0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 
+1.41l-.17.17c-.39.39-1.02.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
+        ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 
+1.65 0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 
 1.06a1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53 1.65 1.65 0 0 0 1.35.61c.49 0 .95-.21 
 1.28-.58.33-.37.52-.85.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 
 0-2.65-.21 1.65 1.65 0 0 0-1.28-1.74 1.68 1.68 0 0 0-1.83 1.53 1.65 1.65 0 0 0-1.35.61c-.49 
 0-.95-.21-1.28-.58-.33-.37-.52-.85-.52-1.36a1.69 1.69 0 0 0-1.69-1.69 1.69 1.69 0 0 0-1.2 2.85 1.68 1.68 0 0 0 1.35-.61 1.65 1.65 0 0 0 
 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53c0 .51.19.99.52 1.36.33.37.79.58 1.28.58Z"/></svg>`,
-  user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 
+        user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 
 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
-};
-Object.assign(ICONS, ICONS_data);
+    };
+
+    menuButton.addEventListener('click', () => document.body.classList.add('sidebar-open'));
+    overlay.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+
+    async function loadPersonas(){
+      try {
+        const res = await fetch(`${API_ROOT}/get-personas`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const personas = await res.json();
+        sidebar.innerHTML='';
+        Object.entries(personas).forEach(([key,name])=>{
+          const card = document.createElement('div');
+          card.className='persona-card';
+          card.innerHTML = `<div class="icon">${ICONS.persona}</div><span class="name">${name}</span>`;
+          card.onclick=()=>selectPersona(key,card, name);
+          sidebar.appendChild(card);
+        });
+      } catch(err) {
+        sidebar.innerHTML='<p style="color:red; padding: 1rem;">角色加载失败</p>';
+        console.error("Failed to load personas:", err);
+      }
+    }
+
+    function selectPersona(key, card, name){
+      currentPersona = key;
+      input.placeholder = `与 ${name} 对话...`;
+      currentPersonaName.textContent = name;
+      document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      chatBox.innerHTML = '';
+      chatHistory = [];
+      addMessage(`你好！我是${name}，现在可以开始聊天了。`, 'ai');
+      document.body.classList.remove('sidebar-open');
+    }
+
+    function addMessage(text, type){
+      const msg = document.createElement('div');
+      msg.className = `message ${type}-message`;
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.innerHTML = ICONS[type === 'user' ? 'user' : 'ai'] || '';
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+
+      if (type === 'ai' && text === '...') {
+        msg.classList.add('loading');
+        bubble.innerHTML = '<div class="dot-flashing"></div>';
+      } else {
+        bubble.textContent = text;
+      }
+      
+      msg.appendChild(avatar);
+      msg.appendChild(bubble);
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      
+      const role = (type === 'user') ? 'user' : 'model';
+      chatHistory.push({ role: role, parts: [{ text: text }] });
+      
+      return msg;
+    }
+
+    function updateMessage(el, newText){
+      el.classList.remove('loading');
+      const bubble = el.querySelector('.message-bubble');
+      if (bubble) {
+        bubble.innerHTML = '';
+        bubble.textContent = newText;
+      }
+      
+      const lastMessage = chatHistory[chatHistory.length - 1];
+      if (lastMessage && lastMessage.role === 'model') {
+        lastMessage.parts[0].text = newText;
+      }
+    }
+
+    async function sendMessage(){
+      const text = input.value.trim();
+      if (!text || !currentPersona) {
+        input.placeholder = !currentPersona ? "请先选择一个角色!" : "消息不能为空!";
+        return;
+      }
+      
+      addMessage(text, 'user');
+      const loading = addMessage('...', 'ai');
+      input.value = '';
+
+      try {
+        const res = await fetch(`${API_ROOT}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: text,
+            persona: currentPersona,
+            history: chatHistory.slice(0, -2)
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || `HTTP error! status: ${res.status}`);
+        }
+        updateMessage(loading, data.reply);
+      } catch (err) {
+        updateMessage(loading, `错误: ${err.message}`);
+        console.error("Send message failed:", err);
+      }
+    }
+
+    sendBtn.onclick = sendMessage;
+    input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+    loadPersonas();
 </script>
 </body>
 </html>
