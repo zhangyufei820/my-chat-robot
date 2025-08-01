@@ -7,34 +7,36 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
 :root {
-  --bg-deep: #121212;
-  --bg-panel: #1E1E1E;
-  --bg-card: #2A2A2A;
-  --bg-card-hover: #3c3c3c;
-  --border-color: #333;
-  --accent-primary: #00A9FF;
-  --accent-glow: rgba(0, 169, 255, 0.5);
-  --text-primary: #EAEAEA;
-  --text-secondary: #B0B0B0;
-  --user-bubble: #005c8a;
-  --ai-bubble: #2c2c2e;
+  --bg-deep: #0a0a10;
+  --bg-panel: rgba(18, 18, 22, 0.8);
+  --bg-card: rgba(42, 42, 48, 0.7);
+  --bg-card-hover: rgba(60, 60, 66, 0.8);
+  --border-color: rgba(128, 128, 128, 0.2);
+  --accent-primary: #00BFFF; /* DeepSkyBlue */
+  --accent-glow: rgba(0, 191, 255, 0.5);
+  --text-primary: #F0F0F5;
+  --text-secondary: #A0A0B0;
+  --user-bubble: rgba(0, 92, 138, 0.8);
+  --ai-bubble: rgba(44, 44, 46, 0.8);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { font-size: 16px; }
 body {
   font-family: 'Noto Sans SC', sans-serif;
-  background: var(--bg-deep);
+  background-color: var(--bg-deep);
+  background-image: radial-gradient(circle at 15% 50%, rgba(0, 191, 255, 0.1), transparent 30%),
+                    radial-gradient(circle at 85% 30%, rgba(157, 142, 238, 0.1), transparent 40%);
   color: var(--text-primary);
   height: 100vh;
   width: 100vw;
   display: flex;
   overflow: hidden;
-  transition: transform 0.3s ease-in-out;
 }
 #sidebar {
   width: 300px;
-  background: var(--bg-deep);
+  background: var(--bg-panel);
   border-right: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   padding: 1rem;
@@ -47,7 +49,7 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-left: 4px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 1rem;
   cursor: pointer;
   user-select: none;
@@ -57,18 +59,20 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 .persona-card:hover {
   background: var(--bg-card-hover);
   color: var(--text-primary);
-  transform: translateX(4px);
+  transform: translate(4px, -2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 .persona-card.active {
   color: var(--text-primary);
-  background: var(--bg-panel);
+  background: var(--bg-card-hover);
   border-left: 4px solid var(--accent-primary);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
 .persona-card .icon {
   width: 24px;
@@ -82,7 +86,6 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--bg-panel);
   height: 100vh;
   min-width: 0;
 }
@@ -92,9 +95,11 @@ body {
   padding: 0 1.5rem;
   height: 60px;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(30, 30, 30, 0.8);
-  backdrop-filter: blur(10px);
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 #menu-button {
   display: none;
@@ -123,16 +128,17 @@ body {
 .message {
   display: flex;
   max-width: 80%;
-  animation: message-fade-in 0.4s ease-out;
+  animation: message-fade-in 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   align-items: flex-end;
   gap: 0.75rem;
 }
-@keyframes message-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes message-fade-in { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 .avatar {
   width: 40px; height: 40px; border-radius: 50%;
   background: var(--bg-deep);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; border: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 .avatar svg { width: 22px; height: 22px; fill: var(--text-secondary); }
 .message-bubble {
@@ -142,6 +148,9 @@ body {
   font-size: 1rem;
   white-space: pre-wrap;
   word-break: break-word;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 .ai-message { align-self: flex-start; }
 .ai-message .message-bubble { background: var(--ai-bubble); color: var(--text-primary); border-bottom-left-radius: 5px; }
@@ -184,7 +193,9 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
   flex-shrink: 0;
 }
 #send-button:hover { transform: scale(1.1); box-shadow: 0 0 12px var(--accent-glow); }
-#send-button svg { fill: #fff; width: 24px; height: 24px; }
+#send-button.loading { background: var(--text-secondary); cursor: not-allowed; transform: scale(1); }
+#send-button svg { fill: #fff; width: 24px; height: 24px; transition: transform 0.3s ease; }
+#send-button.loading svg { transform: rotate(180deg); }
 #overlay {
     display: none;
     position: fixed;
@@ -246,6 +257,7 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
 
     let currentPersona = '';
     let chatHistory = [];
+    let isLoading = false;
 
     const ICONS = {
         persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 
@@ -281,13 +293,14 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
           sidebar.appendChild(card);
         });
       } catch(err) {
-        sidebar.innerHTML='<p style="color:red; padding: 1rem;">角色加载失败</p>';
+        sidebar.innerHTML=`<p style="color:red; padding: 1rem;">角色加载失败: ${err.message}</p>`;
         console.error("Failed to load personas:", err);
       }
     }
 
     function selectPersona(key, card, name){
       currentPersona = key;
+      input.disabled = false;
       input.placeholder = `与 ${name} 对话...`;
       currentPersonaName.textContent = name;
       document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('active'));
@@ -332,7 +345,6 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
         bubble.innerHTML = '';
         bubble.textContent = newText;
       }
-      
       const lastMessage = chatHistory[chatHistory.length - 1];
       if (lastMessage && lastMessage.role === 'model') {
         lastMessage.parts[0].text = newText;
@@ -340,11 +352,14 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
     }
 
     async function sendMessage(){
+      if (isLoading) return;
       const text = input.value.trim();
       if (!text || !currentPersona) {
         input.placeholder = !currentPersona ? "请先选择一个角色!" : "消息不能为空!";
         return;
       }
+      
+      setLoadingState(true);
       
       addMessage(text, 'user');
       const loading = addMessage('...', 'ai');
@@ -368,12 +383,22 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
       } catch (err) {
         updateMessage(loading, `错误: ${err.message}`);
         console.error("Send message failed:", err);
+      } finally {
+        setLoadingState(false);
       }
+    }
+    
+    function setLoadingState(loading) {
+        isLoading = loading;
+        input.disabled = loading;
+        sendBtn.classList.toggle('loading', loading);
     }
 
     sendBtn.onclick = sendMessage;
     input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
+    // 初始状态禁用输入
+    input.disabled = true;
     loadPersonas();
 </script>
 </body>
