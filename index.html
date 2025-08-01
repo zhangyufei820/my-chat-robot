@@ -158,13 +158,13 @@ body {
 .user-message .avatar svg { fill: var(--accent-primary); }
 .user-message .message-bubble { background: var(--user-bubble); color: #fff; border-bottom-right-radius: 5px; }
 .loading .message-bubble { padding: 1.1rem 1.2rem; }
-.loading .dot-flashing { position: relative; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: 
-var(--text-secondary); animation: dot-flashing 1s infinite linear alternate; animation-delay: .5s; }
+.loading .dot-flashing { position: relative; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s 
+infinite linear alternate; animation-delay: .5s; }
 .loading .dot-flashing::before, .loading .dot-flashing::after { content: ''; display: inline-block; position: absolute; top: 0; }
-.loading .dot-flashing::before { left: -15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); 
-color: var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-delay: 0s; }
-.loading .dot-flashing::after { left: 15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: 
-var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-delay: 1s; }
+.loading .dot-flashing::before { left: -15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s 
+infinite alternate; animation-delay: 0s; }
+.loading .dot-flashing::after { left: 15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s 
+infinite alternate; animation-delay: 1s; }
 @keyframes dot-flashing { 0% { background-color: var(--text-secondary); } 50%, 100% { background-color: rgba(176, 176, 176, 0.3); } }
 #input-area {
   padding: 1rem 1.5rem;
@@ -260,20 +260,16 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
     let isLoading = false;
 
     const ICONS = {
-        persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 
-1.05V6h-2.5V4.65c0-.9-.75-1.65-1.65-1.65-.37 0-.72.12-1.01.32l-.5.33c-.45.3-.98.5-1.53.5-1.32 0-2.39-1.07-2.39-2.39S4.68.11 6 .11c.37 0 
-.74.08 1.08.23l.33.15c.98.44 2.1.44 3.08 0l.33-.15c.42-.19.89-.28 1.37-.28.32 0 .63.05.93.14Z M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 
-0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39-.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0 
+        persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 1.05V6h-2.5V4.65c0-.9-.75-1.65-1.65-1.65-.37 
+0-.72.12-1.01.32l-.5.33c-.45.3-.98.5-1.53.5-1.32 0-2.39-1.07-2.39-2.39S4.68.11 6 .11c.37 0 .74.08 1.08.23l.33.15c.98.44 2.1.44 3.08 0l.33-.15c.42-.19.89-.28 1.37-.28.32 0 .63.05.93.14Z 
+M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39-.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0 
 1.41l-.17.17c-.39.39-1.02.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
-        ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 
-1.65 0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 
-1.06a1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53 1.65 1.65 0 0 0 1.35.61c.49 0 .95-.21 
-1.28-.58.33-.37.52-.85.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 
-0-2.65-.21 1.65 1.65 0 0 0-1.28-1.74 1.68 1.68 0 0 0-1.83 1.53 1.65 1.65 0 0 0-1.35.61c-.49 
-0-.95-.21-1.28-.58-.33-.37-.52-.85-.52-1.36a1.69 1.69 0 0 0-1.69-1.69 1.69 1.69 0 0 0-1.2 2.85 1.68 1.68 0 0 0 1.35-.61 1.65 1.65 0 0 0 
-2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53c0 .51.19.99.52 1.36.33.37.79.58 1.28.58Z"/></svg>`,
-        user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 
-4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
+        ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 
+1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 1.06a1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53 1.65 1.65 0 0 0 
+1.35.61c.49 0 .95-.21 1.28-.58.33-.37.52-.85.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 
+0-1.28-1.74 1.68 1.68 0 0 0-1.83 1.53 1.65 1.65 0 0 0-1.35.61c-.49 0-.95-.21-1.28-.58-.33-.37-.52-.85-.52-1.36a1.69 1.69 0 0 0-1.69-1.69 1.69 1.69 0 0 0-1.2 2.85 1.68 1.68 0 0 0 1.35-.61 
+1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53c0 .51.19.99.52 1.36.33-.37.79.58 1.28.58Z"/></svg>`,
+        user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
     };
 
     menuButton.addEventListener('click', () => document.body.classList.add('sidebar-open'));
@@ -355,7 +351,9 @@ var(--text-secondary); animation: dot-flashing 1s infinite alternate; animation-
       if (isLoading) return;
       const text = input.value.trim();
       if (!text || !currentPersona) {
-        input.placeholder = !currentPersona ? "请先选择一个角色!" : "消息不能为空!";
+        if (!currentPersona) {
+            alert("请先从左侧选择一个角色!");
+        }
         return;
       }
       
