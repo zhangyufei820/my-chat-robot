@@ -873,10 +873,10 @@ short and softly rounded, completing a tender, well-balanced, and feminine facia
     }
 }
 
-# ========== 关键词拦截：禁止用户窃取提示词 ==========
+# ========== 关键词拦截 ==========
 BAN_PATTERNS = re.compile(r"提示词|prompt|系统指令|system role|role prompt", re.I)
 
-# ========== API ==========
+# ========== API 路由 ==========
 @app.route('/get-personas', methods=['GET'])
 def get_personas():
     return jsonify({k: v["display_name"] for k, v in SYSTEM_PROMPTS.items()})
@@ -902,15 +902,18 @@ def chat():
     except Exception as e:
         return jsonify({"error": f"调用 Gemini API 失败：{e}"}), 500
 
+# ========== 前端与健康检查路由 (核心修正) ==========
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # 强制从当前目录 '.' 发送 'index.html' 文件，绕过任何模板缓存
+    return send_from_directory('.', 'index.html')
 
 @app.route("/healthz")
 def healthz():
     return "OK", 200
 
+# ========== 启动配置 ==========
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
-# ---------- app.py 结束 ----------
+
