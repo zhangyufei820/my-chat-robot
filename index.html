@@ -18,7 +18,7 @@ body{font-family:'Exo 2','Noto Sans SC',sans-serif;background:var(--deep);color:
 var(--border);overflow-y:auto;background:var(--deep)}
 #chat-wrapper{flex:1;display:flex;flex-direction:column;background:var(--panel)}
 
-/* ==================== 方案2: 视觉升级 ==================== */
+/* ==================== 方案一: 视觉升级 ==================== */
 
 /* 1. 角色卡片优化 */
 .persona-card{
@@ -27,7 +27,7 @@ var(--border);overflow-y:auto;background:var(--deep)}
   user-select:none; font-size:1rem; font-weight:600; line-height:1.4; color:var(--txt2);
   display: flex; align-items: center; gap: 14px;
 }
-.persona-card .icon{width:24px;height:24px;fill:var(--txt2);transition: all .3s ease;}
+.persona-card .icon{width:24px;height:24px;fill:var(--txt2);transition: all .3s ease;flex-shrink:0;}
 .persona-card:hover{
   transform:translateX(5px); background:#282b48; color:#fff;
 }
@@ -60,13 +60,13 @@ var(--border);overflow-y:auto;background:var(--deep)}
 .ai-message{align-self:flex-start;}
 .ai-message .message-bubble{background:var(--ai-bubble);color:var(--txt2); border-bottom-left-radius: 4px;}
 
-/* 用户消息 (右侧) - 核心改动 */
-.user-message{align-self:flex-end; flex-direction:row-reverse;} /* flex-direction 来交换头像和气泡位置 */
+/* 用户消息 (右侧) */
+.user-message{align-self:flex-end; flex-direction:row-reverse;}
 .user-message .avatar svg{fill:var(--c1);}
 .user-message .message-bubble{background:var(--user-bubble);color:#fff; border-bottom-right-radius: 4px;}
 
-/* 正在输入动画 */
-.loading .message-bubble{padding: 20px;}
+/* "输入中"动画 */
+.loading .message-bubble{padding: 20px; background: var(--ai-bubble);}
 .loading .dot-flashing {position: relative; width: 6px; height: 6px; border-radius: 5px; background-color: var(--txt2); color: var(--txt2); 
 animation: dot-flashing 1s infinite linear alternate; animation-delay: .5s;}
 .loading .dot-flashing::before, .loading .dot-flashing::after {content: ''; display: inline-block; position: absolute; top: 0;}
@@ -122,10 +122,10 @@ const sidebar = document.getElementById('sidebar');
 
 // SVG 图标模板
 const ICONS = {
-  persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3.128.5l.48.83c.18.32.28.68.28 
+  persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 
 1.05V6h-2.5V4.65c0-.9-.75-1.65-1.65-1.65-.37 0-.72.12-1.01.32l-.5.33c-.45.3-.98.5-1.53.5-1.32 0-2.39-1.07-2.39-2.39S4.68.11 6 .11c.37 0 
 .74.08 1.08.23l.33.15c.98.44 2.1.44 3.08 0l.33-.15c.42-.19.89-.28 1.37-.28.32 0 .63.05.93.14Z M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 
-0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0 
+0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39-.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0 
 1.41l-.17.17c-.39.39-1.02.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
   ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 
 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 1.06a1.65 1.65 0 
@@ -149,7 +149,6 @@ async function loadPersonas(){
     Object.entries(personas).forEach(([key,name])=>{
       const card = document.createElement('div');
       card.className='persona-card';
-      // 使用 innerHTML 来添加图标和文字
       card.innerHTML = `<div class="icon">${ICONS.persona}</div><span class="name">${name}</span>`;
       card.onclick=()=>selectPersona(key,card, name);
       sidebar.appendChild(card);
@@ -165,26 +164,23 @@ function selectPersona(key, card, name){
   input.placeholder = `以【${name}】身份聊天…`;
   document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('active'));
   card.classList.add('active');
-  // 清空聊天并显示新的欢迎语
-  chatBox.innerHTML = '';
+  chatBox.innerHTML = ''; // 清空聊天
   addMessage(`你好！我是${name}，现在可以开始聊天了。`, 'ai');
 }
 
-/* ---------- 添加消息到DOM (已重构) ---------- */
+/* ---------- 添加消息到DOM (重构) ---------- */
 function addMessage(text, type){
   const msg = document.createElement('div');
   msg.className = `message ${type}-message`;
 
-  // 创建头像
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  avatar.innerHTML = ICONS[type] || '';
+  avatar.innerHTML = ICONS[type] || ICONS.ai; // 默认为AI头像
   
-  // 创建消息气泡
   const bubble = document.createElement('div');
   bubble.className = 'message-bubble';
 
-  // 处理正在加载的动画
+  // 处理 "输入中" 动画
   if (type === 'ai' && text === '...') {
     msg.classList.add('loading');
     bubble.innerHTML = '<div class="dot-flashing"></div>';
@@ -192,8 +188,6 @@ function addMessage(text, type){
     bubble.textContent = text;
   }
   
-  // 按照 AI（左）和用户（右）的顺序添加头像和气泡
-  // CSS中的 flex-direction: row-reverse 会处理用户消息的顺序
   msg.appendChild(avatar);
   msg.appendChild(bubble);
   
@@ -205,10 +199,11 @@ function addMessage(text, type){
 /* ---------- 发送消息 ---------- */
 async function sendMessage(){
   const text = input.value.trim();
-  if(!text||!currentPersona){
-    input.placeholder = "请务必先从左侧选择一个角色!";
+  if(!text){
+    if (!currentPersona) input.placeholder = "请务必先从左侧选择一个角色!";
     return;
   }
+  
   addMessage(text, 'user');
   const loading = addMessage('...', 'ai');
   input.value='';
@@ -226,7 +221,7 @@ async function sendMessage(){
   }
 }
 
-/* ---------- 更新AI消息 (已重构) ---------- */
+/* ---------- 更新AI消息 (重构) ---------- */
 function updateMessage(el, newText){
   el.classList.remove('loading');
   const bubble = el.querySelector('.message-bubble');
