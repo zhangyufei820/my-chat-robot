@@ -1,4 +1,4 @@
-# ---------- app.py  最终修正版 ----------
+# ---------- app.py (已集成上下文记忆功能) ----------
 import os, json, re
 from flask import Flask, request, jsonify, send_from_directory
 import google.generativeai as genai
@@ -9,11 +9,9 @@ if not API_KEY:
     raise RuntimeError("请先设置环境变量 GEMINI_API_KEY")
 
 genai.configure(api_key=API_KEY)
-MODEL_NAME = "gemini-1.5-pro"       # ⚠️ 固定使用 1.5-pro
+MODEL_NAME = "gemini-1.5-pro"
 
-# 核心修正：通过 template_folder='.' 告诉 Flask 在当前根目录寻找模板文件
-app = Flask(__name__, template_folder='.', static_folder='.')
-
+app = Flask(__name__)
 # ========== 系统提示词 (内容保持不变) ==========
 SYSTEM_PROMPTS = {
     "auto_photographer": {
@@ -883,9 +881,12 @@ def get_personas():
 
 @app.route('/chat', methods=['POST'])
 def chat():
+    # --- 核心改动开始 ---
     data = request.get_json(force=True)
     user_msg  = data.get("message", "").strip()
     persona   = data.get("persona", "")
+    history   = data.get("history", []) # 1. 获取前端发送的完整历史记录
+
     if not user_msg:
         return jsonify({"error": "消息不能为空"}), 400
     if persona not in SYSTEM_PROMPTS:
@@ -896,16 +897,21 @@ def chat():
     sys_prompt = SYSTEM_PROMPTS[persona]["prompt"]
     model = genai.GenerativeModel(model_name=MODEL_NAME,
                                   system_instruction=sys_prompt)
+    
+    # 2. 使用历史记录开启一个聊天会话
+    chat_session = model.start_chat(history=history)
+
     try:
-        resp = model.generate_content("请用中文回答以下内容：" + user_msg)
+        # 3. 在会话中发送新消息，AI会结合历史记录进行回复
+        resp = chat_session.send_message(user_msg)
         return jsonify({"reply": resp.text})
     except Exception as e:
         return jsonify({"error": f"调用 Gemini API 失败：{e}"}), 500
+    # --- 核心改动结束 ---
 
-# ========== 前端与健康检查路由 (核心修正) ==========
+# ========== 前端与健康检查路由 ==========
 @app.route('/')
 def index():
-    # 强制从当前目录 '.' 发送 'index.html' 文件，绕过任何模板缓存
     return send_from_directory('.', 'index.html')
 
 @app.route("/healthz")
@@ -916,4 +922,3 @@ def healthz():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
-
