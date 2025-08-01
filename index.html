@@ -7,7 +7,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
 :root {
-  --bg-deep: #0a0a10;
+  --bg-deep: #1a1a25; /* 已将背景调亮 */
   --bg-panel: rgba(18, 18, 22, 0.8);
   --bg-card: rgba(42, 42, 48, 0.7);
   --bg-card-hover: rgba(60, 60, 66, 0.8);
@@ -80,11 +80,11 @@ body {
   fill: var(--text-secondary);
   transition: all 0.25s ease;
   flex-shrink: 0;
-  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)) drop-shadow(0 0 2px rgba(0,0,0,0.2)); /* Enhanced 3D effect */
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3)) drop-shadow(0 0 2px rgba(0,0,0,0.2)); /* 优化立体感 */
 }
 .persona-card:hover .icon, .persona-card.active .icon {
   fill: var(--accent-primary);
-  filter: drop-shadow(0 0 6px var(--accent-glow)); /* Tech glow effect */
+  filter: drop-shadow(0 0 6px var(--accent-glow)); /* 优化科技感 */
   transform: scale(1.1);
 }
 #chat-container {
@@ -218,12 +218,12 @@ infinite alternate; animation-delay: 1s; }
     top: 0;
     left: 0;
     height: 100%;
-    width: 80%; /* 让侧边栏占据更多宽度 */
-    max-width: 300px; /* 最大宽度限制 */
+    width: 80%;
+    max-width: 300px;
     z-index: 100;
     transform: translateX(-100%);
     border-right: 1px solid var(--border-color);
-    box-shadow: 2px 0 15px rgba(0,0,0,0.3); /* 增加阴影 */
+    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
   }
   body.sidebar-open #sidebar {
     transform: translateX(0);
@@ -236,7 +236,7 @@ infinite alternate; animation-delay: 1s; }
   }
   #chat-header {
     padding: 0 1rem;
-    height: 50px; /* 缩小 Header 高度 */
+    height: 50px;
   }
   #current-persona-name {
     font-size: 1rem;
@@ -249,7 +249,7 @@ infinite alternate; animation-delay: 1s; }
   .message-bubble {
     padding: 0.6rem 0.9rem;
     font-size: 0.9rem;
-    border-radius: 15px; /* 更小的圆角 */
+    border-radius: 15px;
   }
   .avatar {
       width: 28px;
@@ -265,7 +265,7 @@ infinite alternate; animation-delay: 1s; }
   }
   #message-input {
       padding: 8px 14px;
-      border-radius: 20px; /* 更小的圆角 */
+      border-radius: 20px;
       font-size: 0.9rem;
   }
   #send-button {
@@ -319,7 +319,7 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
 1.41l-.17.17c-.39.39-1.02.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
         ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 
 1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 1.06a1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53 1.65 1.65 0 0 0 
-1.35.61c.49 0 .95-.21 1.28-.58.33-.37.52-.85.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 
+1.35.61c.49 0 .95-.21 1.28-.58.33-.37-.52-.85-.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 
 0-1.28-1.74 1.68 1.68 0 0 0-1.83 1.53 1.65 1.65 0 0 0-1.35.61c-.49 0-.95-.21-1.28-.58-.33-.37-.52-.85-.52-1.36a1.69 1.69 0 0 0-1.69-1.69 1.69 1.69 0 0 0-1.2 2.85 1.68 1.68 0 0 0 1.35-.61 
 1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53c0 .51.19.99.52 1.36.33-.37.79.58 1.28.58Z"/></svg>`,
         user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
@@ -349,7 +349,7 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
 
     function selectPersona(key, card, name){
       currentPersona = key;
-      // The input is always enabled, we just change the placeholder
+      input.disabled = false;
       input.placeholder = `与 ${name} 对话...`;
       currentPersonaName.textContent = name;
       document.querySelectorAll('.persona-card').forEach(c=>c.classList.remove('active'));
@@ -448,9 +448,8 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
     sendBtn.onclick = sendMessage;
     input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
-    // REMOVED: Initial input disable
-    // input.disabled = true; 
-    
+    // 初始状态禁用输入 - 已被移除以修复桌面端点击问题
+    // input.disabled = true;
     loadPersonas();
 </script>
 </body>
