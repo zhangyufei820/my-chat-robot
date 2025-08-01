@@ -31,6 +31,7 @@ body {
   width: 100vw;
   display: flex;
   overflow: hidden;
+  flex-direction: column; /* 使 body 成为 flex 容器，垂直排列 header, chat-container, input-area */
 }
 #sidebar {
   width: 300px;
@@ -44,6 +45,15 @@ body {
   overflow-y: auto;
   transition: transform 0.3s ease-in-out;
   flex-shrink: 0;
+  position: fixed; /* 侧边栏固定定位 */
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 101; /* 确保在 overlay 之上 */
+  transform: translateX(-100%); /* 初始隐藏 */
+}
+body.sidebar-open #sidebar {
+  transform: translateX(0);
 }
 .persona-card {
   background: var(--bg-card);
@@ -88,11 +98,10 @@ body {
   transform: scale(1.1);
 }
 #chat-container {
-  flex: 1;
+  flex-grow: 1; /* 占据剩余空间 */
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-width: 0;
+  overflow: hidden; /* 防止内容溢出导致滚动条 */
 }
 #chat-header {
   display: flex;
@@ -123,7 +132,7 @@ body {
   text-overflow: ellipsis;
 }
 #chat-box {
-  flex: 1;
+  flex-grow: 1;
   padding: 2rem;
   overflow-y: auto;
   display: flex;
@@ -163,12 +172,12 @@ body {
 .user-message .avatar svg { fill: var(--accent-primary); }
 .user-message .message-bubble { background: var(--user-bubble); color: #fff; border-bottom-right-radius: 5px; }
 .loading .message-bubble { padding: 1.1rem 1.2rem; }
-.loading .dot-flashing { position: relative; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s 
+.loading .dot-flashing { position: relative; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s
 infinite linear alternate; animation-delay: .5s; }
 .loading .dot-flashing::before, .loading .dot-flashing::after { content: ''; display: inline-block; position: absolute; top: 0; }
-.loading .dot-flashing::before { left: -15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s 
+.loading .dot-flashing::before { left: -15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s
 infinite alternate; animation-delay: 0s; }
-.loading .dot-flashing::after { left: 15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s 
+.loading .dot-flashing::after { left: 15px; width: 8px; height: 8px; border-radius: 5px; background-color: var(--text-secondary); color: var(--text-secondary); animation: dot-flashing 1s
 infinite alternate; animation-delay: 1s; }
 @keyframes dot-flashing { 0% { background-color: var(--text-secondary); } 50%, 100% { background-color: rgba(176, 176, 176, 0.3); } }
 #input-area {
@@ -176,6 +185,7 @@ infinite alternate; animation-delay: 1s; }
   border-top: 1px solid var(--border-color);
   display: flex; gap: 1rem; align-items: center;
   background: var(--bg-panel);
+  flex-shrink: 0; /* 防止输入区域收缩 */
 }
 #message-input {
   flex: 1;
@@ -210,71 +220,15 @@ infinite alternate; animation-delay: 1s; }
     z-index: 99;
 }
 @media (max-width: 768px) {
-  html {
-    font-size: 14px; /* 缩小根字体大小 */
+  body {
+    flex-direction: column; /* 确保在小屏幕上 body 仍然是垂直 flex 容器 */
   }
   #sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
     width: 80%;
     max-width: 300px;
-    z-index: 100;
-    transform: translateX(-100%);
-    border-right: 1px solid var(--border-color);
-    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
-  }
-  body.sidebar-open #sidebar {
-    transform: translateX(0);
-  }
-  body.sidebar-open #overlay {
-    display: block;
   }
   #menu-button {
     display: block;
-  }
-  #chat-header {
-    padding: 0 1rem;
-    height: 50px;
-  }
-  #current-persona-name {
-    font-size: 1rem;
-    margin-left: 0.5rem;
-  }
-  #chat-box {
-    padding: 0.75rem;
-    gap: 0.75rem;
-  }
-  .message-bubble {
-    padding: 0.6rem 0.9rem;
-    font-size: 0.9rem;
-    border-radius: 15px;
-  }
-  .avatar {
-      width: 28px;
-      height: 28px;
-  }
-  .avatar svg {
-      width: 16px;
-      height: 16px;
-  }
-  #input-area {
-      padding: 0.5rem;
-      gap: 0.5rem;
-  }
-  #message-input {
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-  }
-  #send-button {
-      width: 36px;
-      height: 36px;
-  }
-  #send-button svg {
-      width: 20px;
-      height: 20px;
   }
 }
 </style>
@@ -288,14 +242,15 @@ infinite alternate; animation-delay: 1s; }
             <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
         <div id="current-persona-name">欢迎使用</div>
+        <div style="margin-left: auto; font-size: 1.2rem; font-weight: bold; color: var(--accent-primary);">公众号:AI星人辉辉</div>
     </header>
     <div id="chat-box"></div>
-    <div id="input-area">
-      <input id="message-input" type="text" placeholder="请先从左侧选择一个角色..." />
-      <button id="send-button" title="发送">
-        <svg viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-      </button>
-    </div>
+  </div>
+  <div id="input-area">
+    <input id="message-input" type="text" placeholder="请先从左侧选择一个角色..." />
+    <button id="send-button" title="发送">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
   </div>
 
 <script>
@@ -313,14 +268,14 @@ infinite alternate; animation-delay: 1s; }
     let isLoading = false;
 
     const ICONS = {
-        persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 1.05V6h-2.5V4.65c0-.9-.75-1.65-1.65-1.65-.37 
-0-.72.12-1.01.32l-.5.33c-.45.3-.98.5-1.53.5-1.32 0-2.39-1.07-2.39-2.39S4.68.11 6 .11c.37 0 .74.08 1.08.23l.33.15c.98.44 2.1.44 3.08 0l.33-.15c.42-.19.89-.28 1.37-.28.32 0 .63.05.93.14Z 
-M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39-.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0 
-1.41l-.17.17c-.39.39-1.02.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
-        ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65 
-1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 1.06a1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53 1.65 1.65 0 0 0 
-1.35.61c.49 0 .95-.21 1.28-.58.33-.37-.52-.85-.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 
-0-1.28-1.74 1.68 1.68 0 0 0-1.83 1.53 1.65 1.65 0 0 0-1.35.61c-.49 0-.95-.21-1.28-.58-.33-.37-.52-.85-.52-1.36a1.69 1.69 0 0 0-1.69-1.69 1.69 1.69 0 0 0-1.2 2.85 1.68 1.68 0 0 0 1.35-.61 
+        persona: `<svg viewBox="0 0 24 24"><path d="M14.25 2.27c.45.13.88.3 1.28.5l.48.83c.18.32.28.68.28 1.05V6h-2.5V4.65c0-.9-.75-1.65-1.65-1.65-.37
+0-.72.12-1.01.32l-.5.33c-.45.3-.98.5-1.53.5-1.32 0-2.39-1.07-2.39-2.39S4.68.11 6 .11c.37 0 .74.08 1.08.23l.33.15c.98.44 2.1.44 3.08 0l.33-.15c.42-.19.89-.28 1.37-.28.32 0 .63.05.93.14Z
+M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41 0l.17.17c.39.39.39 1.02 0 1.41l-2.44 2.44c-.39-.39-.39 1.02 0 1.41l2.44 2.44c.39.39.39 1.02 0
+1.41l-.17.17c-.39-.39-1.02-.39-1.41 0ZM15 22H9c-5 0-7-2-7-7V9c0-5 2-7 7-7h6c5 0 7 2 7 7v6c0 5-2 7-7 7Z"/></svg>`,
+        ai: `<svg viewBox="0 0 24 24"><path d="M19.32 9.47a1.69 1.69 0 0 0-1.2-2.85 1.68 1.68 0 0 0-1.35.61 1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0 0-1.28-1.74A1.68 1.68 0 0 0 11 6.8a1.65
+1.65 0 0 0-1.35-.61 1.69 1.69 0 0 0-1.2-2.85 1.69 1.69 0 0 0-1.63 1.69c0 .4.16.78.43 1.06a1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53 1.65 1.65 0 0 0
+1.35.61c.49 0 .95-.21 1.28-.58-.33-.37-.52-.85-.52-1.36Z M19.32 14.53a1.69 1.69 0 0 0 1.63 1.69c.94 0 1.69-.76 1.69-1.69 0-.4-.16-.78-.43-1.06a1.65 1.65 0 0 0-2.65-.21 1.65 1.65 0 0
+0-1.28-1.74 1.68 1.68 0 0 0-1.83 1.53 1.65 1.65 0 0 0-1.35.61c-.49 0-.95-.21-1.28-.58-.33-.37-.52-.85-.52-1.36a1.69 1.69 0 0 0-1.69-1.69 1.69 1.69 0 0 0-1.2 2.85 1.68 1.68 0 0 0 1.35-.61
 1.65 1.65 0 0 0 2.65.21 1.65 1.65 0 0 0 1.28 1.74 1.68 1.68 0 0 0 1.83-1.53c0 .51.19.99.52 1.36.33-.37.79.58 1.28.58Z"/></svg>`,
         user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
     };
@@ -365,7 +320,7 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
       msg.className = `message ${type}-message`;
       const avatar = document.createElement('div');
       avatar.className = 'avatar';
-      avatar.innerHTML = ICONS[type === 'user' ? 'user' : 'ai'] || '';
+      avatar.innerHTML = ICONS[(type === 'user' ? 'user' : 'ai')] || '';
       const bubble = document.createElement('div');
       bubble.className = 'message-bubble';
 
@@ -375,15 +330,15 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
       } else {
         bubble.textContent = text;
       }
-      
+
       msg.appendChild(avatar);
       msg.appendChild(bubble);
       chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
-      
+
       const role = (type === 'user') ? 'user' : 'model';
       chatHistory.push({ role: role, parts: [{ text: text }] });
-      
+
       return msg;
     }
 
@@ -394,9 +349,9 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
         bubble.innerHTML = '';
         bubble.textContent = newText;
       }
-      const lastMessage = chatHistory[chatHistory.length - 1];
+      const lastMessage = chatHistory[(chatHistory.length - 1)];
       if (lastMessage && lastMessage.role === 'model') {
-        lastMessage.parts[0].text = newText;
+        lastMessage.parts[(lastMessage.parts.length - 1)].text = newText;
       }
     }
 
@@ -409,9 +364,9 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
         }
         return;
       }
-      
+
       setLoadingState(true);
-      
+
       addMessage(text, 'user');
       const loading = addMessage('...', 'ai');
       input.value = '';
@@ -438,7 +393,7 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
         setLoadingState(false);
       }
     }
-    
+
     function setLoadingState(loading) {
         isLoading = loading;
         input.disabled = loading;
@@ -448,8 +403,6 @@ M21.41 14.29l-2.44-2.44c-.39-.39-.39-1.02 0-1.41l2.44-2.44c.39-.39 1.02-.39 1.41
     sendBtn.onclick = sendMessage;
     input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
-    // 初始状态禁用输入 - 已被移除以修复桌面端点击问题
-    // input.disabled = true;
     loadPersonas();
 </script>
 </body>
